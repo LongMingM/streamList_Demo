@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  streamlit-app:
+    build: .
+    container_name: streamlit-ml-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./:/app
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=1 
