@@ -27,6 +27,9 @@ from typing import Optional, List, Dict, Any, Union
 import warnings
 warnings.filterwarnings('ignore')
 
+# 导入配置
+from config import APP_CONFIG, DEFAULT_PATHS
+
 # 尝试导入XGBoost（可选）
 XGBRegressor = None
 XGBClassifier = None
@@ -40,19 +43,6 @@ except ImportError:
 
 # 不在顶层导入LightGBM，而是在需要时导入
 # LightGBM会在get_regression_models和get_classification_models函数中尝试导入
-
-# 应用配置
-APP_CONFIG = {
-    'page_title': '数据可视化与机器学习预测分析',
-    'page_icon': '📊',
-    'layout': "wide",  # 使用字面量而非变量
-    'initial_sidebar_state': "expanded"  # 使用字面量而非变量
-}
-
-# 默认路径配置
-DEFAULT_PATHS = {
-    'data_directory': r"D:\code_study\ML_CODE\kaggle\Regression\Red Wine Quality"
-}
 
 # ========== 工具函数 ==========
 def is_valid_directory(directory_path: str) -> bool:
@@ -111,8 +101,11 @@ def render_visualization(df):
 
     numeric_cols = df.select_dtypes(include='number').columns.tolist()
     if len(numeric_cols) > 0:
-        # 从session_state恢复之前选择的列
+        # 从session_state恢复之前选择的列，确保所有默认值都在numeric_cols中
         default_cols = st.session_state.get('viz_selected_cols', numeric_cols[:1] if numeric_cols else [])
+        # 过滤掉不在numeric_cols中的列
+        default_cols = [col for col in default_cols if col in numeric_cols]
+        
         selected_cols = st.multiselect(
             "选择要可视化的数值列（可多选）", 
             numeric_cols, 
@@ -221,6 +214,9 @@ def render_feature_engineering(df):
     if len(numeric_cols) > 0:
         # 从session_state恢复之前选择的异常值处理列
         default_outlier_cols = st.session_state.get('outlier_cols', [])
+        # 过滤掉不在numeric_cols中的列
+        default_outlier_cols = [col for col in default_outlier_cols if col in numeric_cols]
+        
         outlier_cols = st.multiselect(
             "选择要处理异常值的列", 
             numeric_cols,
@@ -284,8 +280,9 @@ def render_feature_engineering(df):
             # 从session_state恢复之前选择的特征变量
             if 'feature_cols_value' in st.session_state:
                 saved_features = st.session_state['feature_cols_value']
+                # 确保所有特征都在available_features列表中
                 default_features = [f for f in saved_features if f in available_features]
-                
+            
             # 使用feature_cols_widget作为key，而不是feature_cols
             selected_features = st.multiselect(
                 "选择特征变量（优先选择高相关性特征）", 
@@ -364,6 +361,8 @@ def render_model_prediction():
     
     # 从session_state恢复之前选择的模型
     default_models = st.session_state.get('selected_models', model_names[:2])
+    # 过滤掉不在model_names中的模型
+    default_models = [model for model in default_models if model in model_names]
     selected_models = st.multiselect("选择要训练的模型（可多选）", model_names, default=default_models)
     st.session_state['selected_models'] = selected_models
     

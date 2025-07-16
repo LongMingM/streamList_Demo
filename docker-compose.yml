@@ -2,12 +2,15 @@ version: '3'
 
 services:
   streamlit-app:
+    image: streamlit-ml-app
     build: .
     container_name: streamlit-ml-app
     ports:
       - "8501:8501"
     volumes:
       - ./:/app
+      - ${DATA_PATH:-./data}:/app/data
     restart: always
     environment:
-      - PYTHONUNBUFFERED=1 
+      - PYTHONUNBUFFERED=1
+      - DATA_DIR=/app/data 

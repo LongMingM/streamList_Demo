@@ -15,7 +15,8 @@ APP_CONFIG = {
 
 # 默认路径配置
 DEFAULT_PATHS = {
-    'data_directory': r"D:\code_study\ML_CODE\kaggle\Regression\Red Wine Quality"
+    # 使用环境变量设置数据目录，如果没有设置则使用相对路径 './data'
+    'data_directory': os.environ.get('DATA_DIR', './data')
 }
 
 # 模型配置
