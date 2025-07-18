@@ -7,3 +7,6 @@ seaborn>=0.11.0
 plotly>=5.10.0
 xgboost>=1.6.0
 lightgbm>=3.3.0
+sqlalchemy>=2.0.0
+pymysql>=1.0.0
+scipy>=1.11.0
